@@ -23,7 +23,7 @@ class Hooking(Resource):
                 {
                     "label": "Game",
                     "type": "link",
-                    "url": "http://18.140.173.239:8082",
+                    "url": "http://nexpie-giant.ddns.net:8082/birds",
                     "sign": "false",
                     "onechat_token": "true"
                 }

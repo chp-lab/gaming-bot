@@ -69,6 +69,7 @@ class Hooking(Resource):
 
     def post(self):
         TAG = "Hooking:"
+        module = Module()
         
         data = request.json
         print(TAG, "data=", data)

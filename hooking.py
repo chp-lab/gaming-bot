@@ -82,7 +82,7 @@ class Hooking(Resource):
             return module.unauthorized()
         recv_auth = request.headers.get("Authorization")
         if(recv_auth != auth_token):
-            return module.unauthorized
+            return module.unauthorized()
         
 
         # database = Database()

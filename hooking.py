@@ -405,7 +405,13 @@ class Hooking(Resource):
             #     # else:
             #         # print(TAG, "Unknow service")
             else:
-                
+                cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
+                res = database.getData(cmd)
+                print(TAG, "check_age_dat=", res)
+                if(res[0]['result'][0]['age'] is None):
+                    print(TAG, "age is null")
+                else:
+                    print("age valid")
                 self.menu_send(user_id, bot_id)
                 print(TAG, "menu sending")
         # elif(data['event'] == "add_friend"):

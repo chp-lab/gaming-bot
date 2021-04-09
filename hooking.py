@@ -415,7 +415,10 @@ class Hooking(Resource):
                     cmd = """UPDATE `users` SET `age` = '%s' WHERE `users`.`one_email` = '%s'""" % (age, email)
                     update = self.update_data(cmd)
                     print(TAG, "update=", update)
-                    self.send_msg(one_id, "ทดสอบระบบอายุ")
+                    if(update[1] == 200):
+                        self.send_msg(one_id, "ทดสอบระบบอายุ")
+                    else:
+                        self.send_msg(one_id, "กรุณาระบุเป็นตัวเลข")
                 else:
                     print("age valid")
                     self.menu_send(user_id, bot_id)

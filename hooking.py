@@ -85,9 +85,9 @@ class Hooking(Resource):
         
         # auth_token = "6dN6MBba5Uw1TwmJfX9jX1vtKDnHUawY73n&D7KQzcGo.fSAUa&jsp)sWrD@Qd4Q"
         
-        auth_key = "Authorization"
-        if(auth_key not in request.headers):
-            return module.unauthorized()
+        # auth_key = "Authorization"
+        # if(auth_key not in request.headers):
+        #     return module.unauthorized()
         # recv_auth = request.headers.get("Authorization")
         # if(recv_auth != "Bearer " + auth_token):
             # return module.unauthorized()

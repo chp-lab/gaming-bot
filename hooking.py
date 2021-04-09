@@ -146,6 +146,14 @@ class Hooking(Resource):
                 headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
                 result = requests.post(self.onechat_url1, json=req_body, headers=headers)
                 print(TAG, result.text)
+
+                return {
+                    "type": True,
+                    "message": "testing",
+                    "elapsed_time_ms": 0,
+                    "len": 0,
+                    "result": "testing"
+                }
                 # # check that is req from INET employee
                 # # covid_tk_uri = "https://api.covid19.inet.co.th/api/v1/health/"
                 # # cv_token = "Bearer Q27ldU/si5gO/h5+OtbwlN5Ti8bDUdjHeapuXGJFoUP+mA0/VJ9z83cF8O+MKNcBS3wp/pNxUWUf5GrBQpjTGq/aWVugF0Yr/72fwPSTALCVfuRDir90sVl2bNx/ZUuAfA=="

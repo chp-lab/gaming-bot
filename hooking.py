@@ -20,13 +20,12 @@ class Hooking(Resource):
             "message": "ท่านต้องการบริการอะไรหรือไม่",
             "quick_reply":
                 [
-                {
-                    "label": "Game",
-                    "type": "link",
-                    "url": "http://nexpie-giant.ddns.net:8082/birds",
-                    "sign": "false",
-                    "onechat_token": "true"
-                }
+                    {
+                        "label": "อัพเดทโปรไฟล์",
+                        "type": "text",
+                        "message": "ขออัพเดทโปรไฟล์หน่อยครับ",
+                        "payload": "profile_update"
+                    }
                 ]
         }
         headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
@@ -34,7 +33,7 @@ class Hooking(Resource):
         print(TAG, result.text)
     def send_msg(self, one_id, reply_msg):
         TAG = "send_msg:"
-        bot_id = "B75900943c6205ce084d1c5e8850d40f9"
+        bot_id = "B37913f508a675e7db24970fdb7c191f8"
         headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
         payload = {
             "to": one_id,
@@ -74,40 +73,49 @@ class Hooking(Resource):
         data = request.json
         print(TAG, "data=", data)
         print(TAG, request.headers)
+
+        if("event" not in data):
+            return {
+                "type": True,
+                "message": "success",
+                "elapsed_time_ms": 0,
+                "len": 0,
+                "result": "testing"
+            }
         
         # auth_token = "6dN6MBba5Uw1TwmJfX9jX1vtKDnHUawY73n&D7KQzcGo.fSAUa&jsp)sWrD@Qd4Q"
         
-        # auth_key = "Authorization"
-        # if(auth_key not in request.headers):
-            # return module.unauthorized()
+        auth_key = "Authorization"
+        if(auth_key not in request.headers):
+            return module.unauthorized()
         # recv_auth = request.headers.get("Authorization")
         # if(recv_auth != "Bearer " + auth_token):
             # return module.unauthorized()
         
 
-        # database = Database()
-        # module = Module()
-        # onechat_uri = self.onechat_uri
-        # data = request.json
-        # onechat_dev_token = "Bearer Af58c5450f3b45c71a97bc51c05373ecefabc49bd2cd94f3c88d5b844813e69a17e26a828c2b64ef889ef0c10e2aee347"
+        database = Database()
+        module = Module()
+        onechat_uri = self.onechat_uri
+        data = request.json
+        onechat_dev_token = "Bearer Af58c5450f3b45c71a97bc51c05373ecefabc49bd2cd94f3c88d5b844813e69a17e26a828c2b64ef889ef0c10e2aee347"
         # qr_code_api = "https://api.qrserver.com/v1/create-qr-code/"
-        # headers = {"Authorization": onechat_dev_token}
+        headers = {"Authorization": onechat_dev_token}
 
-        # print(TAG, "data=", data)
-        # print(TAG, request.headers)
-        # if(data['event'] == "message"):
-            # bot_id = data['bot_id']
-            # user_id = data['source']['user_id']
-            # email = data['source']['email']
-            # one_id = data['source']['one_id']
-            # name = data['source']['display_name']
-            # user_exist = self.is_user_exist(email)
-            # # real is user_exist
-            # # edit line bellow
-            # if(user_exist):
-                # print(TAG, "user exist!")
-            # else:
-                # print(TAG, "usr not exist!")
+        print(TAG, "data=", data)
+        print(TAG, request.headers)
+        if(data['event'] == "message"):
+            bot_id = data['bot_id']
+            user_id = data['source']['user_id']
+            email = data['source']['email']
+            one_id = data['source']['one_id']
+            name = data['source']['display_name']
+            user_exist = self.is_user_exist(email)
+            # real is user_exist
+            # edit line bellow
+            if(user_exist):
+                print(TAG, "user exist!")
+            else:
+                print(TAG, "usr not exist!")
                 # # check that is req from INET employee
                 # # covid_tk_uri = "https://api.covid19.inet.co.th/api/v1/health/"
                 # # cv_token = "Bearer Q27ldU/si5gO/h5+OtbwlN5Ti8bDUdjHeapuXGJFoUP+mA0/VJ9z83cF8O+MKNcBS3wp/pNxUWUf5GrBQpjTGq/aWVugF0Yr/72fwPSTALCVfuRDir90sVl2bNx/ZUuAfA=="
@@ -127,15 +135,16 @@ class Hooking(Resource):
                 # # sql = """INSERT INTO `users` (`one_email`, `name`, `one_id`) VALUES ('%s', '%s', '%s')""" \
                 # #       % (email, name, one_id)
                 # # insert = database.insertData(sql)
-                # # print(TAG, "insert=", insert)
-                # add_user = self.add_new_user(email, name, one_id)
-                # print(TAG, "add=new_user=", add_user)
+                # print(TAG, "insert=", insert)
+                add_user = self.add_new_user(email, name, one_id)
+                print(TAG, "add=new_user=", add_user)
 
-            # print(TAG, "bot_id=", bot_id)
-            # print(TAG, "user_id=", user_id)
-            # if('data' in data['message']):
-                # if(data['message']['data'] == "access_req"):
-                    # print(TAG, "access req recv")
+            print(TAG, "bot_id=", bot_id)
+            print(TAG, "user_id=", user_id)
+            if('data' in data['message']):
+                if(data['message']['data'] == "profile_update"):
+                    print(TAG, "profile_update_recv")
+                    self.send_msg(one_id, "คุณเพศอะไร")
 
                     # cmd = """SELECT bookings.booking_number, bookings.room_num, bookings.agenda,
                     # bookings.meeting_start, bookings.meeting_end FROM bookings 

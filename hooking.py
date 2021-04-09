@@ -17,7 +17,7 @@ class Hooking(Resource):
         req_body = {
             "to": user_id,
             "bot_id": bot_id,
-            "message": "ท่านต้องการบริการอะไรหรือไม่",
+            "message": "ให้ช่วยอะไรดี",
             "quick_reply":
                 [
                     {
@@ -116,6 +116,36 @@ class Hooking(Resource):
                 print(TAG, "user exist!")
             else:
                 print(TAG, "usr not exist!")
+                self.send_msg(one_id, "คุณเพศอะไร")
+                req_body = {
+                    "to": user_id,
+                    "bot_id": bot_id,
+                    "message": "ให้ช่วยอะไรดี",
+                    "quick_reply":
+                        [
+                            {
+                                "label": "ชาย",
+                                "type": "text",
+                                "message": "ผู้ชายครับ",
+                                "payload": "gen_man"
+                            },
+                            {
+                                "label": "หญิง",
+                                "type": "text",
+                                "message": "ผู้หญิงค่ะ",
+                                "payload": "gen_women"
+                            },
+                            {
+                                "label": "ไม่ระบุ",
+                                "type": "text",
+                                "message": "ไม่ระบุ",
+                                "payload": "gen_undef"
+                            }
+                        ]
+                }
+                headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
+                result = requests.post(self.onechat_url1, json=req_body, headers=headers)
+                print(TAG, result.text)
                 # # check that is req from INET employee
                 # # covid_tk_uri = "https://api.covid19.inet.co.th/api/v1/health/"
                 # # cv_token = "Bearer Q27ldU/si5gO/h5+OtbwlN5Ti8bDUdjHeapuXGJFoUP+mA0/VJ9z83cF8O+MKNcBS3wp/pNxUWUf5GrBQpjTGq/aWVugF0Yr/72fwPSTALCVfuRDir90sVl2bNx/ZUuAfA=="
@@ -144,8 +174,6 @@ class Hooking(Resource):
             if('data' in data['message']):
                 if(data['message']['data'] == "profile_update"):
                     print(TAG, "profile_update_recv")
-                    self.send_msg(one_id, "คุณเพศอะไร")
-
                     # cmd = """SELECT bookings.booking_number, bookings.room_num, bookings.agenda,
                     # bookings.meeting_start, bookings.meeting_end FROM bookings 
                     # WHERE (bookings.meeting_end > (CURRENT_TIMESTAMP)) AND (bookings.one_email = "%s") 

@@ -166,8 +166,8 @@ class Hooking(Resource):
                 # #       % (email, name, one_id)
                 # # insert = database.insertData(sql)
                 # print(TAG, "insert=", insert)
-                add_user = self.add_new_user(email, name, one_id)
-                print(TAG, "add=new_user=", add_user)
+                # add_user = self.add_new_user(email, name, one_id)
+                # print(TAG, "add=new_user=", add_user)
 
             print(TAG, "bot_id=", bot_id)
             print(TAG, "user_id=", user_id)

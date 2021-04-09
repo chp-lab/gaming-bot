@@ -199,7 +199,7 @@ class Hooking(Resource):
                 if("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)
-                    cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen)
+                    cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen, email)
                     self.update_data(cmd)
                     self.send_msg(one_id, "อายุเท่าไหร่")
 

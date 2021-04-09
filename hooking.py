@@ -72,6 +72,11 @@ class Hooking(Resource):
         print(TAG, "cmd=", cmd)
         update = database.insertData(cmd)
         return update
+    def send_quick_reply(self, req_body):
+        TAG = "quick_reply"
+        headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
+        result = requests.post(self.onechat_url1, json=req_body, headers=headers)
+        print(TAG, result.text)
 
     def post(self):
         TAG = "Hooking:"
@@ -194,7 +199,10 @@ class Hooking(Resource):
                 if("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)
-                    # cmd """"""
+                    cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen)
+                    self.update_data(cmd)
+                    self.send_msg(one_id, "อายุเท่าไหร่")
+
             #         # cmd = """SELECT bookings.booking_number, bookings.room_num, bookings.agenda,
             #         # bookings.meeting_start, bookings.meeting_end FROM bookings
             #         # WHERE (bookings.meeting_end > (CURRENT_TIMESTAMP)) AND (bookings.one_email = "%s")
@@ -396,9 +404,10 @@ class Hooking(Resource):
             #     # #     print(r.text)
             #     # else:
             #         # print(TAG, "Unknow service")
-            # else:
-            #     self.menu_send(user_id, bot_id)
-            #     print(TAG, "menu sending")
+            else:
+                
+                self.menu_send(user_id, bot_id)
+                print(TAG, "menu sending")
         # elif(data['event'] == "add_friend"):
             # bot_id = data['bot_id']
             # user_id = data['source']['user_id']

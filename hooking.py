@@ -200,7 +200,8 @@ class Hooking(Resource):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)
                     cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen, email)
-                    self.update_data(cmd)
+                    update = self.update_data(cmd)
+                    print("gen update=", update)
                     self.send_msg(one_id, "อายุเท่าไหร่")
 
             #         # cmd = """SELECT bookings.booking_number, bookings.room_num, bookings.agenda,
@@ -409,11 +410,16 @@ class Hooking(Resource):
                 res = database.getData(cmd)
                 print(TAG, "check_age_dat=", res)
                 if(res[0]['result'][0]['age'] is None):
-                    print(TAG, "age is null")
+                    age = data['message']['text']
+                    print(TAG, "age=", age)
+                    cmd = """UPDATE `users` SET `age` = '%s' WHERE `users`.`one_email` = '%s'""" % (age, email)
+                    update = self.update_data(cmd)
+                    print(TAG, "update=", update)
+                    self.send_msg("ทดสอบระบบอายุ")
                 else:
                     print("age valid")
-                self.menu_send(user_id, bot_id)
-                print(TAG, "menu sending")
+                    self.menu_send(user_id, bot_id)
+                    print(TAG, "menu sending")
         # elif(data['event'] == "add_friend"):
             # bot_id = data['bot_id']
             # user_id = data['source']['user_id']

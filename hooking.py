@@ -347,9 +347,9 @@ class Hooking(Resource):
                 # #     print(r.text)
                 # else:
                     # print(TAG, "Unknow service")
-            # else:
-                # self.menu_send(user_id, bot_id)
-                # print(TAG, "menu sending")
+            else:
+                self.menu_send(user_id, bot_id)
+                print(TAG, "menu sending")
         # elif(data['event'] == "add_friend"):
             # bot_id = data['bot_id']
             # user_id = data['source']['user_id']

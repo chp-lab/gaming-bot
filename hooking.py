@@ -128,7 +128,7 @@ class Hooking(Resource):
                 print(TAG, "user exist!")
             else:
                 print(TAG, "usr not exist!")
-                # self.send_msg(one_id, "คุณเพศอะไร")
+                self.send_msg(one_id, "สวัสดีค่ะ แนะนำตัวเองเเบื้องต้นพื่อหาผู้คนที่คุณสนใจ")
                 req_body = {
                     "to": user_id,
                     "bot_id": bot_id,

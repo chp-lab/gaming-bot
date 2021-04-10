@@ -239,7 +239,7 @@ class Hooking(Resource):
                 elif ("profile_confirm" in data['message']['data']):
                     profile_confirm = data['message']['data']['profile_confirm']
                     if(profile_confirm == "confirm"):
-                        self.send_msg(one_id, "ผู้คนยินดีที่รุ้จักคุณ")
+                        self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
                         self.menu_send(user_id, bot_id)
 
                 elif ("action" in data['message']['data']):

@@ -239,13 +239,18 @@ class Hooking(Resource):
                 print(TAG, "check_age_dat=", res)
                 if(res[0]['result'][0]['age'] is None):
                     age = data['message']['text']
+
+                    if(not age.isnumeric()):
+                        self.send_msg(one_id, "กระรุณาระบุเป็นตัวเลขค่ะ")
+                        return module.wrongAPImsg()
+
                     age = int(age)
+
                     if(age == 0):
                         self.send_msg(one_id, "กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
                         return module.wrongAPImsg()
                     print(TAG, "age=", age)
-                    if(not age.is_integer()):
-                        self.send_msg(one_id, "กระรุณาระบุเป็นตัวเลขค่ะ")
+
                         return module.wrongAPImsg()
                     if(age < 18 or age > 100):
                         self.send_msg(one_id, "อายุของคุณไม่อยู่ในช่วงที่กำหนด")

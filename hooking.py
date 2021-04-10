@@ -135,11 +135,10 @@ class Hooking(Resource):
             else:
                 print(TAG, "usr not exist!")
                 self.send_msg(one_id, "สวัสดีค่ะ แนะนำตัวเองเเบื้องต้นพื่อหาผู้คนที่คุณสนใจ")
-                self.send_msg(one_id, "อายุเท่าไหร่คะ")
                 req_body = {
                     "to": user_id,
                     "bot_id": bot_id,
-                    "message": "คุณเพศอะไร",
+                    "message": "เพศอะไร",
                     "quick_reply":
                         [
                             {
@@ -256,13 +255,13 @@ class Hooking(Resource):
                     age = data['message']['text']
 
                     if(not age.isnumeric()):
-                        self.send_msg(one_id, "กระรุณาระบุเป็นตัวเลขค่ะ")
+                        self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขค่ะ")
                         return module.wrongAPImsg()
 
                     age = int(age)
 
                     if(age == 0):
-                        self.send_msg(one_id, "กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
+                        self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
                         return module.wrongAPImsg()
                     print(TAG, "age=", age)
 
@@ -301,7 +300,7 @@ class Hooking(Resource):
                         }
                         self.send_quick_reply(one_id, req_body)
                     else:
-                        self.send_msg(one_id, "กรุณาระบุเป็นตัวเลข")
+                        self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
                 else:
                     print("age valid")
                     self.menu_send(user_id, bot_id)

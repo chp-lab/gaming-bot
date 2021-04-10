@@ -251,7 +251,6 @@ class Hooking(Resource):
                         return module.wrongAPImsg()
                     print(TAG, "age=", age)
 
-                        return module.wrongAPImsg()
                     if(age < 18 or age > 100):
                         self.send_msg(one_id, "อายุของคุณไม่อยู่ในช่วงที่กำหนด")
                         return module.unauthorized()

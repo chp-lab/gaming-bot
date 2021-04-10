@@ -286,13 +286,13 @@ class Hooking(Resource):
                                     {
                                         "label": "ชาย",
                                         "type": "text",
-                                        "message": "ผู้ชายครับ",
+                                        "message": "ผู้ชายค่ะ",
                                         "payload": {"interested_gen": "man"}
                                     },
                                     {
                                         "label": "หญิง",
                                         "type": "text",
-                                        "message": "ผู้หญิงค่ะ",
+                                        "message": "ผู้หญิงครับ",
                                         "payload": {"interested_gen": "woman"}
                                     },
                                     {

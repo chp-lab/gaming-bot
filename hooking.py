@@ -206,7 +206,7 @@ class Hooking(Resource):
                 elif("interested_gen" in data['message']['data']):
                     interested_gen = data['message']['data']['interested_gen']
                     print(TAG, "interested_gen=", interested_gen)
-                    cmd = """UPDATE `users` SET `interested_gen` = '%s' WHERE `users`.`one_email` = '%s'""" %(interested_gen, email)
+                    cmd = """UPDATE `users` SET `interested_in` = '%s' WHERE `users`.`one_email` = '%s'""" %(interested_gen, email)
                     update = self.update_data(cmd)
                     print(TAG, "interested_gen_update=", update)
                     req_body = {

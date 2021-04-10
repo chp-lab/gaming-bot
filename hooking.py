@@ -246,6 +246,11 @@ class Hooking(Resource):
                     action = data['message']['data']['action']
                     if("action" == "find_single"):
                         self.send_msg(one_id, "พบกันเร็วๆ นี้ค่ะ")
+                    elif("action" == "eject"):
+                        print(TAG, "delete record")
+                        cmd = """DELETE FROM `users` WHERE users.one_email=`%s`""" %(email)
+                        self.send_msg(one_id, "ไว้คุยกันใหม่นะ")
+                        return module.unauthorized()
 
             else:
                 cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)

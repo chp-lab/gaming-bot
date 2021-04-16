@@ -242,19 +242,23 @@ class Hooking(Resource):
                 if(tmp_data['gender'] is None):
                     req_body = self.gender_quest(user_id, bot_id)
                     self.send_quick_reply(one_id, req_body)
+                    return module.success()
                 elif(tmp_data['age'] is None):
                     print(TAG, "ask age")
                     self.send_msg(one_id, "อายุเท่าไหร่")
+                    return module.success()
                 elif(tmp_data['interested_in'] is None):
                     print(TAG, "ask interested_in")
                     req_body = self.interested_quest(user_id, bot_id)
                     self.send_quick_reply(one_id, req_body)
+                    return module.success()
                 elif(tmp_data['data_valid'] is None):
                     print(TAG, "profile not confirm")
                     tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" %(tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
                     self.send_msg(one_id, tmp_msg)
                     req_body = self.data_valid_quest(user_id, bot_id)
                     self.send_quick_reply(one_id, req_body)
+                    return module.success()
                 else:
                     print(TAG, "user data valid")
             else:

@@ -202,7 +202,7 @@ class Hooking(Resource):
 
                     elif(profile_confirm == "eject"):
                         print(TAG, "delete record")
-                        cmd = """DELETE FROM `users` WHERE users.one_email=`%s`""" %(email)
+                        cmd = """DELETE FROM `users` WHERE users.one_email='%s'""" %(email)
                         res = database.insertData(cmd)
                         print(TAG, "delete data=", res)
                         self.send_msg(one_id, "ไว้คุยกันใหม่นะ")

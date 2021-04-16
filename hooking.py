@@ -92,7 +92,6 @@ class Hooking(Resource):
 
     def post(self):
         TAG = "Hooking:"
-        module = Module()
         
         data = request.json
         print(TAG, "data=", data)
@@ -100,10 +99,10 @@ class Hooking(Resource):
 
         database = Database()
         module = Module()
-        onechat_uri = self.onechat_uri
+        # onechat_uri = self.onechat_uri
         data = request.json
-        onechat_dev_token = "Bearer Af58c5450f3b45c71a97bc51c05373ecefabc49bd2cd94f3c88d5b844813e69a17e26a828c2b64ef889ef0c10e2aee347"
-        headers = {"Authorization": onechat_dev_token}
+        # onechat_dev_token = "Bearer Af58c5450f3b45c71a97bc51c05373ecefabc49bd2cd94f3c88d5b844813e69a17e26a828c2b64ef889ef0c10e2aee347"
+        # headers = {"Authorization": onechat_dev_token}
 
         print(TAG, "data=", data)
         print(TAG, request.headers)
@@ -117,17 +116,83 @@ class Hooking(Resource):
         email = data['source']['email']
         one_id = data['source']['one_id']
         name = data['source']['display_name']
+
+        print(TAG, "user_id=", user_id)
+        print(TAG, "one email=", email)
+
         user_exist = self.is_user_exist(email)
         if (user_exist):
             print(TAG, "user exist!")
-            cmd = "SELECT `users`.`data_valid` FROM `users` WHERE `users`.`one_email`='%s'" % (email)
+            cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
+            FROM users WHERE users.one_email='%s'""" % (email)
+
             res = database.getData(cmd)
+
             if(res[1] == 200):
-                if(res[0]['result'][0]['data_valid'] is None):
+                tmp_data = res[0]['result'][0]
+                if(tmp_data['gender'] is None):
+                    req_body = {
+                        "to": user_id,
+                        "bot_id": bot_id,
+                        "message": "เพศอะไร",
+                        "quick_reply":
+                            [
+                                {
+                                    "label": "ชาย",
+                                    "type": "text",
+                                    "message": "ผู้ชายครับ",
+                                    "payload": {"gen": "man"}
+                                },
+                                {
+                                    "label": "หญิง",
+                                    "type": "text",
+                                    "message": "ผู้หญิงค่ะ",
+                                    "payload": {"gen": "woman"}
+                                },
+                                {
+                                    "label": "ไม่ระบุ",
+                                    "type": "text",
+                                    "message": "ไม่ระบุ",
+                                    "payload": {"gen": "not_specified"}
+                                }
+                            ]
+                    }
+                    self.send_quick_reply(one_id, req_body)
+                elif(tmp_data['age'] is None):
+                    print(TAG, "ask age")
+                    self.send_msg(one_id, "อายุเท่าไหร่")
+                elif(tmp_data['interested_in'] is None):
+                    print(TAG, "ask interested_in")
+                    req_body = {
+                        "to": user_id,
+                        "bot_id": bot_id,
+                        "message": "สนใจในเพศไหน",
+                        "quick_reply":
+                            [
+                                {
+                                    "label": "ชาย",
+                                    "type": "text",
+                                    "message": "ผู้ชายค่ะ",
+                                    "payload": {"interested_gen": "man"}
+                                },
+                                {
+                                    "label": "หญิง",
+                                    "type": "text",
+                                    "message": "ผู้หญิงครับ",
+                                    "payload": {"interested_gen": "woman"}
+                                },
+                                {
+                                    "label": "ไม่ระบุ",
+                                    "type": "text",
+                                    "message": "ไม่ระบุ",
+                                    "payload": {"interested_gen": "not_specified"}
+                                }
+                            ]
+                    }
+                    self.send_quick_reply(one_id, req_body)
+                elif(tmp_data['data_valid'] is None):
                     print(TAG, "profile not confirm")
-                    cmd = """SELECT users.name, users.age, users.gender, users.interested_in 
-                    FROM `users` WHERE users.one_email='%s'""" %(email)
-                    tmp_msg = "กรุณาตรวจสอบข้อมูลของคุณ ชื่อ %s อายุ %s สนใจในเพศ %s ยืนยันข้อมูลถูกต้อง"
+                    tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" %(tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
                     self.send_msg(one_id, tmp_msg)
                     req_body = {
                         "to": user_id,
@@ -150,12 +215,12 @@ class Hooking(Resource):
                             ]
                     }
                     self.send_quick_reply(one_id, req_body)
-                    return module.success()
                 else:
                     print(TAG, "user data valid")
             else:
                 print(TAG, "fail on check user data_valid")
                 return module.serveErrMsg()
+        #first meet
         else:
             print(TAG, "usr not exist!")
             self.send_msg(one_id, "สวัสดีค่ะ แนะนำตัวเองเเบื้องต้นพื่อหาผู้คนที่คุณสนใจ")
@@ -185,15 +250,9 @@ class Hooking(Resource):
                         }
                     ]
             }
-            headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
-            result = requests.post(self.onechat_url1, json=req_body, headers=headers)
-            print(TAG, result.text)
-
+            self.send_quick_reply(one_id, req_body)
             add_user = self.add_new_user(email, name, one_id)
             print(TAG, "add=new_user=", add_user)
-
-            print(TAG, "bot_id=", bot_id)
-            print(TAG, "user_id=", user_id)
 
             return module.success()
 
@@ -206,7 +265,6 @@ class Hooking(Resource):
                     cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen, email)
                     update = self.update_data(cmd)
                     print("gen update=", update)
-                    self.send_msg(one_id, "อายุเท่าไหร่")
                 elif("interested_gen" in data['message']['data']):
                     interested_gen = data['message']['data']['interested_gen']
                     print(TAG, "interested_gen=", interested_gen)
@@ -237,7 +295,6 @@ class Hooking(Resource):
                         self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
                         self.menu_send(user_id, bot_id)
                         return module.success()
-
                     elif(profile_confirm == "eject"):
                         print(TAG, "delete record")
                         cmd = """DELETE FROM `users` WHERE users.one_email='%s'""" %(email)
@@ -284,33 +341,7 @@ class Hooking(Resource):
                         update = self.update_data(cmd)
                         print(TAG, "update=", update)
                         if(update[1] == 200):
-                            req_body = {
-                                "to": user_id,
-                                "bot_id": bot_id,
-                                "message": "สนใจในเพศไหน",
-                                "quick_reply":
-                                    [
-                                        {
-                                            "label": "ชาย",
-                                            "type": "text",
-                                            "message": "ผู้ชายค่ะ",
-                                            "payload": {"interested_gen": "man"}
-                                        },
-                                        {
-                                            "label": "หญิง",
-                                            "type": "text",
-                                            "message": "ผู้หญิงครับ",
-                                            "payload": {"interested_gen": "woman"}
-                                        },
-                                        {
-                                            "label": "ไม่ระบุ",
-                                            "type": "text",
-                                            "message": "ไม่ระบุ",
-                                            "payload": {"interested_gen": "not_specified"}
-                                        }
-                                    ]
-                            }
-                            self.send_quick_reply(one_id, req_body)
+                            print(TAG, "set age")
                             return module.success()
                         else:
                             self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")

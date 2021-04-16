@@ -98,35 +98,16 @@ class Hooking(Resource):
         print(TAG, "data=", data)
         print(TAG, request.headers)
 
-        if("event" not in data):
-            return {
-                "type": True,
-                "message": "success",
-                "elapsed_time_ms": 0,
-                "len": 0,
-                "result": "testing"
-            }
-        
-        # auth_token = "6dN6MBba5Uw1TwmJfX9jX1vtKDnHUawY73n&D7KQzcGo.fSAUa&jsp)sWrD@Qd4Q"
-        
-        # auth_key = "Authorization"
-        # if(auth_key not in request.headers):
-        #     return module.unauthorized()
-        # recv_auth = request.headers.get("Authorization")
-        # if(recv_auth != "Bearer " + auth_token):
-            # return module.unauthorized()
-        
-
         database = Database()
         module = Module()
         onechat_uri = self.onechat_uri
         data = request.json
         onechat_dev_token = "Bearer Af58c5450f3b45c71a97bc51c05373ecefabc49bd2cd94f3c88d5b844813e69a17e26a828c2b64ef889ef0c10e2aee347"
-        # qr_code_api = "https://api.qrserver.com/v1/create-qr-code/"
         headers = {"Authorization": onechat_dev_token}
 
         print(TAG, "data=", data)
         print(TAG, request.headers)
+
         if(data['event'] == "message"):
             bot_id = data['bot_id']
             user_id = data['source']['user_id']
@@ -134,8 +115,6 @@ class Hooking(Resource):
             one_id = data['source']['one_id']
             name = data['source']['display_name']
             user_exist = self.is_user_exist(email)
-            # real is user_exist
-            # edit line bellow
             if(user_exist):
                 print(TAG, "user exist!")
             else:
@@ -174,39 +153,12 @@ class Hooking(Resource):
                 add_user = self.add_new_user(email, name, one_id)
                 print(TAG, "add=new_user=", add_user)
 
-                return {
-                    "type": True,
-                    "message": "testing",
-                    "elapsed_time_ms": 0,
-                    "len": 0,
-                    "result": "testing"
-                }
-                # # check that is req from INET employee
-                # # covid_tk_uri = "https://api.covid19.inet.co.th/api/v1/health/"
-                # # cv_token = "Bearer Q27ldU/si5gO/h5+OtbwlN5Ti8bDUdjHeapuXGJFoUP+mA0/VJ9z83cF8O+MKNcBS3wp/pNxUWUf5GrBQpjTGq/aWVugF0Yr/72fwPSTALCVfuRDir90sVl2bNx/ZUuAfA=="
-                # # cv = requests.get(covid_tk_uri + one_id, headers={"Authorization": cv_token})
-                # # print(TAG, "cv=", cv.json())
-                # # cv_json = cv.json()
-                # # print(TAG, "cv_json=", cv_json)
-                # #
-                # # if (cv_json["msg"] == "forbidden"):
-                # #     print(TAG, "user not in our company")
-                # #     # send message via bot to reject user
-                # #     # api return
-                # # else:
-                # #     # add user to database
-                # #     # process continue
-                # # print(TAG, "add user to our system")
-                # # sql = """INSERT INTO `users` (`one_email`, `name`, `one_id`) VALUES ('%s', '%s', '%s')""" \
-                # #       % (email, name, one_id)
-                # # insert = database.insertData(sql)
-                # print(TAG, "insert=", insert)
-                # add_user = self.add_new_user(email, name, one_id)
-                # print(TAG, "add=new_user=", add_user)
+                return module.success()
 
             print(TAG, "bot_id=", bot_id)
             print(TAG, "user_id=", user_id)
 
+            # quick reply
             if('data' in data['message']):
                 if("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
@@ -266,75 +218,72 @@ class Hooking(Resource):
                 if(msg_type == "image"):
                     self.send_msg(one_id, "กำลังพัฒนาระบบบันทึกรูป")
                     return module.success()
-                elif(msg_type != "text"):
+                elif(msg_type == "text"):
+                    cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
+                    res = database.getData(cmd)
+                    print(TAG, "check_age_dat=", res)
+                    if(res[0]['result'][0]['age'] is None):
+                        age = data['message']['text']
+
+                        if(not age.isnumeric()):
+                            self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขค่ะ")
+                            return module.wrongAPImsg()
+
+                        age = int(age)
+
+                        if(age == 0):
+                            self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
+                            return module.wrongAPImsg()
+                        print(TAG, "age=", age)
+
+                        if(age < 18 or age > 100):
+                            self.send_msg(one_id, "อายุของคุณไม่อยู่ในช่วงที่กำหนด")
+                            return module.unauthorized()
+                        cmd = """UPDATE `users` SET `age` = '%s' WHERE `users`.`one_email` = '%s'""" % (age, email)
+                        update = self.update_data(cmd)
+                        print(TAG, "update=", update)
+                        if(update[1] == 200):
+                            req_body = {
+                                "to": user_id,
+                                "bot_id": bot_id,
+                                "message": "สนใจในเพศไหน",
+                                "quick_reply":
+                                    [
+                                        {
+                                            "label": "ชาย",
+                                            "type": "text",
+                                            "message": "ผู้ชายค่ะ",
+                                            "payload": {"interested_gen": "man"}
+                                        },
+                                        {
+                                            "label": "หญิง",
+                                            "type": "text",
+                                            "message": "ผู้หญิงครับ",
+                                            "payload": {"interested_gen": "woman"}
+                                        },
+                                        {
+                                            "label": "ไม่ระบุ",
+                                            "type": "text",
+                                            "message": "ไม่ระบุ",
+                                            "payload": {"interested_gen": "not_specified"}
+                                        }
+                                    ]
+                            }
+                            self.send_quick_reply(one_id, req_body)
+                            return module.success()
+                        else:
+                            self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
+                            module.success()
+                    else:
+                        print("age valid")
+                        self.menu_send(user_id, bot_id)
+                        print(TAG, "menu sending")
+                else:
                     self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
                     return module.success()
-            else:
-                cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
-                res = database.getData(cmd)
-                print(TAG, "check_age_dat=", res)
-                if(res[0]['result'][0]['age'] is None):
-                    age = data['message']['text']
-
-                    if(not age.isnumeric()):
-                        self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขค่ะ")
-                        return module.wrongAPImsg()
-
-                    age = int(age)
-
-                    if(age == 0):
-                        self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
-                        return module.wrongAPImsg()
-                    print(TAG, "age=", age)
-
-                    if(age < 18 or age > 100):
-                        self.send_msg(one_id, "อายุของคุณไม่อยู่ในช่วงที่กำหนด")
-                        return module.unauthorized()
-                    cmd = """UPDATE `users` SET `age` = '%s' WHERE `users`.`one_email` = '%s'""" % (age, email)
-                    update = self.update_data(cmd)
-                    print(TAG, "update=", update)
-                    if(update[1] == 200):
-                        req_body = {
-                            "to": user_id,
-                            "bot_id": bot_id,
-                            "message": "สนใจในเพศไหน",
-                            "quick_reply":
-                                [
-                                    {
-                                        "label": "ชาย",
-                                        "type": "text",
-                                        "message": "ผู้ชายค่ะ",
-                                        "payload": {"interested_gen": "man"}
-                                    },
-                                    {
-                                        "label": "หญิง",
-                                        "type": "text",
-                                        "message": "ผู้หญิงครับ",
-                                        "payload": {"interested_gen": "woman"}
-                                    },
-                                    {
-                                        "label": "ไม่ระบุ",
-                                        "type": "text",
-                                        "message": "ไม่ระบุ",
-                                        "payload": {"interested_gen": "not_specified"}
-                                    }
-                                ]
-                        }
-                        self.send_quick_reply(one_id, req_body)
-                    else:
-                        self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
-
-                else:
-                    print("age valid")
-                    self.menu_send(user_id, bot_id)
-                    print(TAG, "menu sending")
-        # elif(data['event'] == "add_friend"):
-            # bot_id = data['bot_id']
-            # user_id = data['source']['user_id']
-            # email = data['source']['email']
-        # else:
-            # print(TAG, "unkown data")
-
+        else:
+            print(TAG, "event not found!")
+            return module.wrongAPImsg()
         return {
             "type": True,
             "message": "success",

@@ -260,6 +260,14 @@ class Hooking(Resource):
                     elif(action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")
                         return module.success()
+            elif("type" in data['message']):
+                msg_type = data['message']["type"]
+                print(TAG, "msg_type=", msg_type)
+                if(msg_type == "image"):
+                    self.send_msg(one_id, "กำลังพัฒนาระบบบันทึกรูป")
+                else:
+                    self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
+                return module.success()
             else:
                 cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
                 res = database.getData(cmd)

@@ -108,6 +108,10 @@ class Hooking(Resource):
         print(TAG, "data=", data)
         print(TAG, request.headers)
 
+        if('event' not in data):
+            print(TAG, "event not found!")
+            return module.wrongAPImsg()
+
         if(data['event'] == "message"):
             bot_id = data['bot_id']
             user_id = data['source']['user_id']
@@ -285,7 +289,7 @@ class Hooking(Resource):
                     self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
                     return module.success()
         else:
-            print(TAG, "event not found!")
+            print(TAG, "event not support!")
             return module.wrongAPImsg()
         return {
             "type": True,

@@ -112,71 +112,23 @@ class Hooking(Resource):
             print(TAG, "event not found!")
             return module.wrongAPImsg()
 
-        if(data['event'] == "message"):
-            bot_id = data['bot_id']
-            user_id = data['source']['user_id']
-            email = data['source']['email']
-            one_id = data['source']['one_id']
-            name = data['source']['display_name']
-            user_exist = self.is_user_exist(email)
-            if(user_exist):
-                print(TAG, "user exist!")
-            else:
-                print(TAG, "usr not exist!")
-                self.send_msg(one_id, "สวัสดีค่ะ แนะนำตัวเองเเบื้องต้นพื่อหาผู้คนที่คุณสนใจ")
-                req_body = {
-                    "to": user_id,
-                    "bot_id": bot_id,
-                    "message": "เพศอะไร",
-                    "quick_reply":
-                        [
-                            {
-                                "label": "ชาย",
-                                "type": "text",
-                                "message": "ผู้ชายครับ",
-                                "payload": {"gen": "man"}
-                            },
-                            {
-                                "label": "หญิง",
-                                "type": "text",
-                                "message": "ผู้หญิงค่ะ",
-                                "payload": {"gen": "woman"}
-                            },
-                            {
-                                "label": "ไม่ระบุ",
-                                "type": "text",
-                                "message": "ไม่ระบุ",
-                                "payload": {"gen": "not_specified"}
-                            }
-                        ]
-                }
-                headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
-                result = requests.post(self.onechat_url1, json=req_body, headers=headers)
-                print(TAG, result.text)
-
-                add_user = self.add_new_user(email, name, one_id)
-                print(TAG, "add=new_user=", add_user)
-
-                return module.success()
-
-            print(TAG, "bot_id=", bot_id)
-            print(TAG, "user_id=", user_id)
-
-            # quick reply
-            if('data' in data['message']):
-                if("gen" in data['message']['data']):
-                    gen = data['message']['data']["gen"]
-                    print(TAG, "gen=", gen)
-                    cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen, email)
-                    update = self.update_data(cmd)
-                    print("gen update=", update)
-                    self.send_msg(one_id, "อายุเท่าไหร่")
-                elif("interested_gen" in data['message']['data']):
-                    interested_gen = data['message']['data']['interested_gen']
-                    print(TAG, "interested_gen=", interested_gen)
-                    cmd = """UPDATE `users` SET `interested_in` = '%s' WHERE `users`.`one_email` = '%s'""" %(interested_gen, email)
-                    update = self.update_data(cmd)
-                    print(TAG, "interested_gen_update=", update)
+        bot_id = data['bot_id']
+        user_id = data['source']['user_id']
+        email = data['source']['email']
+        one_id = data['source']['one_id']
+        name = data['source']['display_name']
+        user_exist = self.is_user_exist(email)
+        if (user_exist):
+            print(TAG, "user exist!")
+            cmd = "SELECT `users`.`data_valid` FROM `users` WHERE `users`.`one_email`='%s'" % (email)
+            res = database.getData(cmd)
+            if(res[1] == 200):
+                if(res[0]['result'][0]['data_valid'] is None):
+                    print(TAG, "profile not confirm")
+                    cmd = """SELECT users.name, users.age, users.gender, users.interested_in 
+                    FROM `users` WHERE users.one_email='%s'""" %(email)
+                    tmp_msg = "กรุณาตรวจสอบข้อมูลของคุณ ชื่อ %s อายุ %s สนใจในเพศ %s ยืนยันข้อมูลถูกต้อง"
+                    self.send_msg(one_id, tmp_msg)
                     req_body = {
                         "to": user_id,
                         "bot_id": bot_id,
@@ -198,11 +150,93 @@ class Hooking(Resource):
                             ]
                     }
                     self.send_quick_reply(one_id, req_body)
+                    return module.success()
+                else:
+                    print(TAG, "user data valid")
+            else:
+                print(TAG, "fail on check user data_valid")
+                return module.serveErrMsg()
+        else:
+            print(TAG, "usr not exist!")
+            self.send_msg(one_id, "สวัสดีค่ะ แนะนำตัวเองเเบื้องต้นพื่อหาผู้คนที่คุณสนใจ")
+            req_body = {
+                "to": user_id,
+                "bot_id": bot_id,
+                "message": "เพศอะไร",
+                "quick_reply":
+                    [
+                        {
+                            "label": "ชาย",
+                            "type": "text",
+                            "message": "ผู้ชายครับ",
+                            "payload": {"gen": "man"}
+                        },
+                        {
+                            "label": "หญิง",
+                            "type": "text",
+                            "message": "ผู้หญิงค่ะ",
+                            "payload": {"gen": "woman"}
+                        },
+                        {
+                            "label": "ไม่ระบุ",
+                            "type": "text",
+                            "message": "ไม่ระบุ",
+                            "payload": {"gen": "not_specified"}
+                        }
+                    ]
+            }
+            headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
+            result = requests.post(self.onechat_url1, json=req_body, headers=headers)
+            print(TAG, result.text)
+
+            add_user = self.add_new_user(email, name, one_id)
+            print(TAG, "add=new_user=", add_user)
+
+            print(TAG, "bot_id=", bot_id)
+            print(TAG, "user_id=", user_id)
+
+            return module.success()
+
+        if(data['event'] == "message"):
+            # quick reply
+            if('data' in data['message']):
+                if("gen" in data['message']['data']):
+                    gen = data['message']['data']["gen"]
+                    print(TAG, "gen=", gen)
+                    cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" %(gen, email)
+                    update = self.update_data(cmd)
+                    print("gen update=", update)
+                    self.send_msg(one_id, "อายุเท่าไหร่")
+                elif("interested_gen" in data['message']['data']):
+                    interested_gen = data['message']['data']['interested_gen']
+                    print(TAG, "interested_gen=", interested_gen)
+                    cmd = """UPDATE `users` SET `interested_in` = '%s' WHERE `users`.`one_email` = '%s'""" %(interested_gen, email)
+                    update = self.update_data(cmd)
+                    print(TAG, "interested_gen_update=", update)
+                    req_body = {
+                        "to": user_id,
+                        "bot_id": bot_id,
+                        "message": "ขอดูข้อมูล",
+                        "quick_reply":
+                            [
+                                {
+                                    "label": "ขอดูข้อมูลส่วนตัว",
+                                    "type": "text",
+                                    "message": "ขอดูข้อมูลส่วนตัว",
+                                    "payload": {"action": "get_profile"}
+                                }
+                            ]
+                    }
+                    self.send_quick_reply(one_id, req_body)
                 elif ("profile_confirm" in data['message']['data']):
                     profile_confirm = data['message']['data']['profile_confirm']
                     if(profile_confirm == "confirm"):
+                        update = """UPDATE `users` SET `data_valid` = '%s' WHERE `users`.`one_email` = '%s'""" % (True, email)
+                        res = database.insertData(update)
+                        print(TAG, "profile confirm=", res)
                         self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
                         self.menu_send(user_id, bot_id)
+                        return module.success()
 
                     elif(profile_confirm == "eject"):
                         print(TAG, "delete record")

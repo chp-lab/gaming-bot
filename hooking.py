@@ -265,9 +265,10 @@ class Hooking(Resource):
                 print(TAG, "msg_type=", msg_type)
                 if(msg_type == "image"):
                     self.send_msg(one_id, "กำลังพัฒนาระบบบันทึกรูป")
-                else:
+                    return module.success()
+                elif(msg_type != "text"):
                     self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
-                return module.success()
+                    return module.success()
             else:
                 cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
                 res = database.getData(cmd)

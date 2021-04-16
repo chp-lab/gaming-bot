@@ -207,7 +207,7 @@ class Hooking(Resource):
             print(TAG, "bot_id=", bot_id)
             print(TAG, "user_id=", user_id)
 
-            if('data' in data['message']):
+            if(data['message']['type'] == "text"):
                 if("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)
@@ -314,6 +314,7 @@ class Hooking(Resource):
                         self.send_quick_reply(one_id, req_body)
                     else:
                         self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
+
                 else:
                     print("age valid")
                     self.menu_send(user_id, bot_id)

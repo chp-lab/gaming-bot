@@ -21,6 +21,12 @@ class Hooking(Resource):
             "quick_reply":
                 [
                     {
+                        "label": "อัพโหลดรูป",
+                        "type": "text",
+                        "message": "อัพโหลดรูป",
+                        "payload": {"action": "image_rec"}
+                    },
+                    {
                         "label": "ทำความรู้จักผู้คน",
                         "type": "text",
                         "message": "มีใครโสดอยู่บ้าง",

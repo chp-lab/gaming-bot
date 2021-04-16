@@ -199,9 +199,12 @@ class Hooking(Resource):
                     if(profile_confirm == "confirm"):
                         self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
                         self.menu_send(user_id, bot_id)
+
                     elif(profile_confirm == "eject"):
                         print(TAG, "delete record")
                         cmd = """DELETE FROM `users` WHERE users.one_email=`%s`""" %(email)
+                        res = database.insertData(cmd)
+                        print(TAG, "delete data=", res)
                         self.send_msg(one_id, "ไว้คุยกันใหม่นะ")
                         return module.unauthorized()
                 elif ("action" in data['message']['data']):

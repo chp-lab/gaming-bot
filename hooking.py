@@ -197,7 +197,6 @@ class Hooking(Resource):
 
     def post(self):
         TAG = "Hooking:"
-        
         data = request.json
         print(TAG, "data=", data)
         print(TAG, request.headers)
@@ -230,7 +229,7 @@ class Hooking(Resource):
         print(TAG, "one email=", email)
 
         user_exist = self.is_user_exist(email)
-        if (user_exist and 'data' not in data['message']):
+        if ((user_exist) and not ('data' in data['message'])):
             print(TAG, "user exist!")
             cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
             FROM users WHERE users.one_email='%s'""" % (email)

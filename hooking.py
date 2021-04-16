@@ -229,8 +229,8 @@ class Hooking(Resource):
         print(TAG, "one email=", email)
 
         user_exist = self.is_user_exist(email)
-        if (user_exist):
-            print(TAG, "user exist!")
+        if (user_exist and (not 'data' in data['message'])):
+            print(TAG, "### user exist!")
             cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
             FROM users WHERE users.one_email='%s'""" % (email)
 

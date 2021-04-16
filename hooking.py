@@ -91,7 +91,7 @@ class Hooking(Resource):
         print(TAG, result.text)
 
     def gender_quest(self, user_id, bot_id):
-        this_quest = req_body = {
+        this_quest = {
                         "to": user_id,
                         "bot_id": bot_id,
                         "message": "เพศอะไร",
@@ -229,7 +229,7 @@ class Hooking(Resource):
         print(TAG, "one email=", email)
 
         user_exist = self.is_user_exist(email)
-        if ((user_exist) and not ('data' in data['message'])):
+        if (user_exist):
             print(TAG, "user exist!")
             cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
             FROM users WHERE users.one_email='%s'""" % (email)

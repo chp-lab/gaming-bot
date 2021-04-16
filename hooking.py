@@ -36,7 +36,7 @@ class Hooking(Resource):
                         "label": "อัพเดทโปรไฟล์",
                         "type": "text",
                         "message": "ขออัพเดทโปรไฟล์หน่อยครับ",
-                        "payload": "profile_update"
+                        "payload": {"action": "profile_update"}
                     }
                 ]
         }
@@ -247,17 +247,19 @@ class Hooking(Resource):
                     if(profile_confirm == "confirm"):
                         self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
                         self.menu_send(user_id, bot_id)
-
-                elif ("action" in data['message']['data']):
-                    action = data['message']['data']['action']
-                    if("action" == "find_single"):
-                        self.send_msg(one_id, "พบกันเร็วๆ นี้ค่ะ")
-                    elif("action" == "eject"):
+                    elif(profile_confirm == "eject"):
                         print(TAG, "delete record")
                         cmd = """DELETE FROM `users` WHERE users.one_email=`%s`""" %(email)
                         self.send_msg(one_id, "ไว้คุยกันใหม่นะ")
                         return module.unauthorized()
-
+                elif ("action" in data['message']['data']):
+                    action = data['message']['data']['action']
+                    if(action == "find_single"):
+                        self.send_msg(one_id, "พบกันเร็วๆ นี้ค่ะ")
+                        return module.success()
+                    elif(action == "image_rec"):
+                        self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")
+                        return module.success()
             else:
                 cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" %(email)
                 res = database.getData(cmd)

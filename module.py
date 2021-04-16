@@ -43,6 +43,14 @@ class Module():
                    'result': None
                }, 404
 
+    def success(self):
+        return {
+                   'type': True,
+                   'message': "success",
+                   'error_message': None,
+                   'result': []
+               }, 200
+
     def isValidToken(self, current_user):
         if("sub" not in current_user):
             return False

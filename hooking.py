@@ -207,7 +207,7 @@ class Hooking(Resource):
             print(TAG, "bot_id=", bot_id)
             print(TAG, "user_id=", user_id)
 
-            if(data['message']['type'] == "text"):
+            if('data' in data['message']):
                 if("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)

@@ -213,7 +213,10 @@ class Hooking(Resource):
 
         if('event' not in data):
             print(TAG, "event not found!")
-            return module.wrongAPImsg()
+            # assum OneChat iBeacon event detected
+            print(TAG, "OneChat iBeacon detected")
+            return module.success()
+            # return module.wrongAPImsg()
 
         if(data['event'] != "message"):
             print(TAG, "event not support")

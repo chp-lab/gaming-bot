@@ -3,6 +3,8 @@ import yaml
 class MysqlConfig:
     mysql_conf_file = ""
     def __init__(self):
+        TAG = "mysql_config:"
+        print(TAG, "current dir=", __file__)
         self.mysql_conf_file = "./database_config.yaml"
     def showData(self):
         print("Testing")

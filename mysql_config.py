@@ -1,11 +1,11 @@
 import yaml
-import pathlib
+import os
 
 class MysqlConfig:
     mysql_conf_file = ""
     def __init__(self):
         TAG = "mysql_config:"
-        my_dir = pathlib.Path(__file__).resolve().parent
+        my_dir = os.getcwd()
         print(TAG, "current dir=", my_dir)
         self.mysql_conf_file = my_dir + "/database_config.yaml"
     def showData(self):

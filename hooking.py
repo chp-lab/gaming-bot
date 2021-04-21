@@ -313,6 +313,8 @@ class Hooking(Resource):
                         print(TAG, "update=", update)
                         if (update[1] == 200):
                             print(TAG, "set age")
+                            req_body = self.interested_quest(user_id, bot_id)
+                            self.send_quick_reply(one_id, req_body)
                             return module.success()
                         else:
                             self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
@@ -352,7 +354,7 @@ class Hooking(Resource):
                             return module.serveErrMsg()
                         module.success()
                     else:
-                        print("age valid")
+                        print(TAG, "age valid")
                         self.menu_send(user_id, bot_id)
                         print(TAG, "menu sending")
                 else:

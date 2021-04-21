@@ -320,7 +320,7 @@ class Hooking(Resource):
 
                         print(TAG, "interested in=", interested_in)
 
-                        cmd ="""SELECT users.name, users.cover_image 
+                        cmd ="""SELECT users.name 
                         FROM users WHERE users.gender="%s" AND users.one_email != '%s'
                         ORDER BY RAND()
                         LIMIT 1""" %(interested_in, email)
@@ -333,9 +333,9 @@ class Hooking(Resource):
                         results = res[0]['result']
                         for people in results:
                             p_name = people['name']
-                            p_cover_img = people['interested_in']
+                            # p_cover_img = people['interested_in']
                             self.send_msg(one_id, p_name)
-                            self.send_msg(one_id, p_cover_img)
+                            # self.send_msg(one_id, p_cover_img)
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")

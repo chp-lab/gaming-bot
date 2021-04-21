@@ -27,7 +27,7 @@ class Hooking(Resource):
                         "payload": {"action": "image_rec"}
                     },
                     {
-                        "label": "มีใครอยู่บ้าง",
+                        "label": "random ผู้คน",
                         "type": "text",
                         "message": "มีใครโสดอยู่บ้าง",
                         "payload": {"action": "find_single"}

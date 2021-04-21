@@ -314,20 +314,26 @@ class Hooking(Resource):
                     action = data['message']['data']['action']
                     if (action == "find_single"):
                         cmd = """SELECT users.name, users.interested_in FROM users WHERE users.one_email='%s'""" %(email)
+                        print(TAG, "cmd=", cmd)
                         res = database.getData(cmd)
                         interested_in = res[0]['result'][0]['interested_in']
+
+                        print(TAG, "interested in=", interested_in)
 
                         cmd ="""SELECT users.name, users.cover_image 
                         FROM users WHERE users.gender="%s" AND users.one_email != '%s'
                         ORDER BY RAND()
-                        LIMIT 1;""" %(interested_in, email)
+                        LIMIT 1""" %(interested_in, email)
+
+                        print(TAG, "cmd=", cmd)
                         res = database.getData(cmd)
+                        print(TAG, "single people=", res)
                         print(TAG, "res=", res)
 
                         results = res[0]['result']
-                        for peple in results:
-                            p_name = peple['name']
-                            p_cover_img = peple['interested_in']
+                        for people in results:
+                            p_name = people['name']
+                            p_cover_img = people['interested_in']
                             self.send_msg(one_id, p_name)
                             self.send_msg(one_id, p_cover_img)
                         return module.success()

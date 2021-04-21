@@ -357,7 +357,7 @@ class Hooking(Resource):
                         for people in results:
                             p_name = people['name']
                             p_cover_img = people['cover_image']
-                            self.send_msg(one_id, p_name)
+                            # self.send_msg(one_id, p_name)
                             self.send_image_car(user_id, bot_id, p_cover_img, p_name)
                         self.menu_send(user_id, bot_id)
                         return module.success()

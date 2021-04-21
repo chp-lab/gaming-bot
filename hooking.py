@@ -352,7 +352,7 @@ class Hooking(Resource):
                             p_name = people['name']
                             p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
-                            self.send_image_car(self, user_id, bot_id, p_cover_img)
+                            self.send_image_car(user_id, bot_id, p_cover_img)
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")

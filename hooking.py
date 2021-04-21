@@ -195,6 +195,45 @@ class Hooking(Resource):
         }
         return this_quest
 
+    def profile_verify(self, one_id, user_id, bot_id, email):
+        TAG = "profile_verify:"
+
+        database = Database()
+        module = Module()
+
+        cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
+                                FROM users WHERE users.one_email='%s'""" % (email)
+
+        res = database.getData(cmd)
+
+        if (res[1] == 200):
+            tmp_data = res[0]['result'][0]
+            if (tmp_data['gender'] is None):
+                req_body = self.gender_quest(user_id, bot_id)
+                self.send_quick_reply(one_id, req_body)
+            elif (tmp_data['age'] is None):
+                print(TAG, "ask age")
+                self.send_msg(one_id, "คุณอายุเท่าไหร่")
+            elif (tmp_data['interested_in'] is None):
+                print(TAG, "ask interested_in")
+                req_body = self.interested_quest(user_id, bot_id)
+                self.send_quick_reply(one_id, req_body)
+            elif (tmp_data['data_valid'] is None):
+                print(TAG, "profile not confirm")
+                tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" % (
+                    tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
+                self.send_msg(one_id, tmp_msg)
+                req_body = self.data_valid_quest(user_id, bot_id)
+                self.send_quick_reply(one_id, req_body)
+            else:
+                print(TAG, "user data valid")
+                self.menu_send(user_id, bot_id)
+                print(TAG, "menu sending")
+            return module.success()
+        else:
+            print(TAG, "fail on check user data_valid")
+            return module.serveErrMsg()
+
     def post(self):
         TAG = "Hooking:"
         data = request.json
@@ -318,45 +357,15 @@ class Hooking(Resource):
                             return module.success()
                         else:
                             self.send_msg(one_id, "คุณอายุเท่าไหร่คะ ระบุเป็นตัวเลข")
+                            return module.wrongAPImsg()
 
-                        cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
-                        FROM users WHERE users.one_email='%s'""" % (email)
+                        res = self.profile_verify(one_id, user_id, bot_id, email)
+                        return res
 
-                        res = database.getData(cmd)
-
-                        if (res[1] == 200):
-                            tmp_data = res[0]['result'][0]
-                            if (tmp_data['gender'] is None):
-                                req_body = self.gender_quest(user_id, bot_id)
-                                self.send_quick_reply(one_id, req_body)
-                                return module.success()
-                            elif (tmp_data['age'] is None):
-                                print(TAG, "ask age")
-                                self.send_msg(one_id, "คุณอายุเท่าไหร่")
-                                return module.success()
-                            elif (tmp_data['interested_in'] is None):
-                                print(TAG, "ask interested_in")
-                                req_body = self.interested_quest(user_id, bot_id)
-                                self.send_quick_reply(one_id, req_body)
-                                return module.success()
-                            elif (tmp_data['data_valid'] is None):
-                                print(TAG, "profile not confirm")
-                                tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" % (
-                                tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
-                                self.send_msg(one_id, tmp_msg)
-                                req_body = self.data_valid_quest(user_id, bot_id)
-                                self.send_quick_reply(one_id, req_body)
-                                return module.success()
-                            else:
-                                print(TAG, "user data valid")
-                        else:
-                            print(TAG, "fail on check user data_valid")
-                            return module.serveErrMsg()
-                        module.success()
                     else:
                         print(TAG, "age valid")
-                        self.menu_send(user_id, bot_id)
-                        print(TAG, "menu sending")
+                        res = self.profile_verify(one_id, user_id, bot_id, email)
+                        return res
                 else:
                     self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
                     return module.success()

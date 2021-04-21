@@ -13,7 +13,7 @@ class Hooking(Resource):
     def menu_send(self, user_id, bot_id):
         TAG = "menu_send:"
         # web_vue_url1 = "https://web-meeting-room.herokuapp.com/"
-        web_vue_url1 = "https://onesmartaccess.herokuapp.com/"
+        # web_vue_url1 = "https://onesmartaccess.herokuapp.com/"
         req_body = {
             "to": user_id,
             "bot_id": bot_id,
@@ -234,10 +234,13 @@ class Hooking(Resource):
             print(TAG, "fail on check user data_valid")
             return module.serveErrMsg()
 
-    def send_image_car(self, user_id, bot_id, img_ln):
-        req_body = {
+    def send_image_car(self, one_id, bot_id, img_ln):
+        TAG = "send_image_car"
+        headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
+        print(TAG, "send_image_car, one_id=", one_id)
+        payload = {
 	        "bot_id": bot_id,
-	        "to": user_id,
+	        "to": one_id,
 	        "elements": [
                 {
                     "type": "image",
@@ -248,8 +251,10 @@ class Hooking(Resource):
                     "onechat_token": "false",
                     "button": ""
                 }
-	    ]
-}
+	        ]
+        }
+        r = requests.post(self.onechat_uri + "/message/api/v1/push_message", headers=headers, json=payload)
+        return r
 
     def post(self):
         TAG = "Hooking:"
@@ -352,7 +357,7 @@ class Hooking(Resource):
                             p_name = people['name']
                             p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
-                            self.send_image_car(user_id, bot_id, p_cover_img)
+                            self.send_image_car(one_id, bot_id, p_cover_img)
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")

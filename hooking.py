@@ -94,19 +94,19 @@ class Hooking(Resource):
         this_quest = {
                         "to": user_id,
                         "bot_id": bot_id,
-                        "message": "เพศอะไร",
+                        "message": "คุณเพศอะไร",
                         "quick_reply":
                             [
                                 {
                                     "label": "ชาย",
                                     "type": "text",
-                                    "message": "ผู้ชายครับ",
+                                    "message": "ผมผู้ชายครับ",
                                     "payload": {"gen": "man"}
                                 },
                                 {
                                     "label": "หญิง",
                                     "type": "text",
-                                    "message": "ผู้หญิงค่ะ",
+                                    "message": "หนูผู้หญิงค่ะ",
                                     "payload": {"gen": "woman"}
                                 },
                                 {
@@ -129,13 +129,13 @@ class Hooking(Resource):
                                 {
                                     "label": "ชาย",
                                     "type": "text",
-                                    "message": "ผู้ชายค่ะ",
+                                    "message": "สนใจผู้ชายค่ะ",
                                     "payload": {"interested_gen": "man"}
                                 },
                                 {
                                     "label": "หญิง",
                                     "type": "text",
-                                    "message": "ผู้หญิงครับ",
+                                    "message": "สนใจผู้หญิงครับ",
                                     "payload": {"interested_gen": "woman"}
                                 },
                                 {
@@ -244,7 +244,7 @@ class Hooking(Resource):
                     cmd = """UPDATE `users` SET `gender` = '%s' WHERE `users`.`one_email` = '%s'""" % (gen, email)
                     update = self.update_data(cmd)
                     print("gen update=", update)
-                    self.send_msg(one_id, "อายุเท่าไหร่คะ")
+                    self.send_msg(one_id, "คุณอายุเท่าไหร่คะ")
                 elif ("interested_gen" in data['message']['data']):
                     interested_gen = data['message']['data']['interested_gen']
                     print(TAG, "interested_gen=", interested_gen)
@@ -258,7 +258,7 @@ class Hooking(Resource):
                     profile_confirm = data['message']['data']['profile_confirm']
                     if (profile_confirm == "confirm"):
                         update = """UPDATE `users` SET `data_valid` = '%s' WHERE `users`.`one_email` = '%s'""" % (
-                        True, email)
+                        1, email)
                         res = database.insertData(update)
                         print(TAG, "profile confirm=", res)
                         self.send_msg(one_id, "ผู้คนยินดีที่รู้จักคุณ")
@@ -295,13 +295,13 @@ class Hooking(Resource):
                         age = data['message']['text']
 
                         if (not age.isnumeric()):
-                            self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขค่ะ")
+                            self.send_msg(one_id, "คุณอายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขค่ะ")
                             return module.wrongAPImsg()
 
                         age = int(age)
 
                         if (age == 0):
-                            self.send_msg(one_id, "อายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
+                            self.send_msg(one_id, "คุณอายุเท่าไหร่คะ กระรุณาระบุเป็นตัวเลขที่ถูกต้องค่ะ")
                             return module.wrongAPImsg()
                         print(TAG, "age=", age)
 
@@ -317,7 +317,7 @@ class Hooking(Resource):
                             self.send_quick_reply(one_id, req_body)
                             return module.success()
                         else:
-                            self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
+                            self.send_msg(one_id, "คุณอายุเท่าไหร่คะ ระบุเป็นตัวเลข")
 
                         cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
                         FROM users WHERE users.one_email='%s'""" % (email)
@@ -332,7 +332,7 @@ class Hooking(Resource):
                                 return module.success()
                             elif (tmp_data['age'] is None):
                                 print(TAG, "ask age")
-                                self.send_msg(one_id, "อายุเท่าไหร่")
+                                self.send_msg(one_id, "คุณอายุเท่าไหร่")
                                 return module.success()
                             elif (tmp_data['interested_in'] is None):
                                 print(TAG, "ask interested_in")

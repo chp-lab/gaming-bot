@@ -333,7 +333,7 @@ class Hooking(Resource):
                         results = res[0]['result']
                         for people in results:
                             p_name = people['name']
-                            p_cover_img = people['interested_in']
+                            p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
                             self.send_msg(one_id, p_cover_img)
                         return module.success()

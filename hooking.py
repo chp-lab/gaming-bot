@@ -324,7 +324,16 @@ class Hooking(Resource):
                 msg_type = data['message']["type"]
                 print(TAG, "data contain type, msg_type=", msg_type)
                 if (msg_type == "image"):
-                    self.send_msg(one_id, "กำลังพัฒนาระบบบันทึกรูป")
+                    file_loc = data["message"]["file"]
+                    action = "image_rec"
+                    sent_from = email
+                    sent_to = bot_id
+                    res_msg = "บันทึกรูปภาพแล้ว"
+                    cmd = """INSERT INTO `action_logs` (`action_id`, `action`, `message`, `sent_from`, `sent_to`, `response`, `responsed_at`, `created_at`) 
+                    VALUES (NULL, '%s', '%s', '%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""" %(action, file_loc, sent_from, sent_to, res_msg)
+                    insert = database.insertData(cmd)
+                    print(TAG, "insert=", insert)
+                    self.send_msg(one_id, res_msg)
                     return module.success()
                 elif (msg_type == "text"):
                     cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" % (email)

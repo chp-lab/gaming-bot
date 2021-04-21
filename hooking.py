@@ -234,6 +234,23 @@ class Hooking(Resource):
             print(TAG, "fail on check user data_valid")
             return module.serveErrMsg()
 
+    def send_image_car(self, user_id, bot_id, img_ln):
+        req_body = {
+	        "bot_id": bot_id,
+	        "to": user_id,
+	        "elements": [
+                {
+                    "type": "image",
+                    "image": img_ln,
+                    "action": "",
+                    "payload": "",
+                    "sign": "false",
+                    "onechat_token": "false",
+                    "button": ""
+                }
+	    ]
+}
+
     def post(self):
         TAG = "Hooking:"
         data = request.json
@@ -335,7 +352,7 @@ class Hooking(Resource):
                             p_name = people['name']
                             p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
-                            self.send_msg(one_id, p_cover_img)
+                            self.send_image_car(self, user_id, bot_id, p_cover_img)
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")

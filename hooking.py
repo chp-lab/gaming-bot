@@ -254,6 +254,7 @@ class Hooking(Resource):
 	        ]
         }
         r = requests.post(self.onechat_uri + "/bot-message/api/v1/image-carousel", headers=headers, json=payload)
+        print(TAG, "r=", r.text)
         return r
 
     def post(self):

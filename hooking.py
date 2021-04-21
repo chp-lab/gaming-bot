@@ -237,7 +237,7 @@ class Hooking(Resource):
     def send_image_car(self, user_id, bot_id, img_ln):
         TAG = "send_image_car:"
         headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
-        print(TAG, "send_image_car, one_id=", one_id)
+        print(TAG, "send_image_car, one_id=", user_id)
         payload = {
 	        "bot_id": bot_id,
 	        "to": user_id,

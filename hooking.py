@@ -234,7 +234,7 @@ class Hooking(Resource):
             print(TAG, "fail on check user data_valid")
             return module.serveErrMsg()
 
-    def send_image_car(self, user_id, bot_id, img_ln):
+    def send_image_car(self, user_id, bot_id, img_ln, button):
         TAG = "send_image_car:"
         headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
         print(TAG, "send_image_car, one_id=", user_id)
@@ -249,7 +249,7 @@ class Hooking(Resource):
                     "payload": "",
                     "sign": "false",
                     "onechat_token": "false",
-                    "button": ""
+                    "button": button
                 }
 	        ]
         }
@@ -358,7 +358,7 @@ class Hooking(Resource):
                             p_name = people['name']
                             p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
-                            self.send_image_car(user_id, bot_id, p_cover_img)
+                            self.send_image_car(user_id, bot_id, p_cover_img, p_name)
                         self.menu_send(user_id, bot_id)
                         return module.success()
                     elif (action == "image_rec"):

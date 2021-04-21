@@ -21,9 +21,9 @@ class Hooking(Resource):
             "quick_reply":
                 [
                     {
-                        "label": "อัพโหลดรูป",
+                        "label": "บันทึกรูปแนะนำตัว",
                         "type": "text",
-                        "message": "อัพโหลดรูป",
+                        "message": "บันทึกรูปแนะนำตัว",
                         "payload": {"action": "image_rec"}
                     },
                     {
@@ -328,11 +328,15 @@ class Hooking(Resource):
                     action = "image_rec"
                     sent_from = email
                     sent_to = bot_id
-                    res_msg = "บันทึกรูปภาพแล้ว"
+                    res_msg = "บันทึกรูปภาพแนะนำตัวแล้ว"
                     cmd = """INSERT INTO `action_logs` (`action_id`, `action`, `message`, `sent_from`, `sent_to`, `response`, `responsed_at`, `created_at`) 
                     VALUES (NULL, '%s', '%s', '%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""" %(action, file_loc, sent_from, sent_to, res_msg)
                     insert = database.insertData(cmd)
-                    print(TAG, "insert=", insert)
+                    print(TAG, "insert cover image=", insert)
+                    cmd = """UPDATE `users` SET `cover_image` = '%s' 
+                    WHERE `users`.`one_email` = '%s'""" %(file_loc, email)
+                    update = self.update_data(cmd)
+                    print(TAG, "update cover_image=", update)
                     self.send_msg(one_id, res_msg)
                     return module.success()
                 elif (msg_type == "text"):

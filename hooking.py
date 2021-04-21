@@ -235,7 +235,7 @@ class Hooking(Resource):
             return module.serveErrMsg()
 
     def send_image_car(self, one_id, bot_id, img_ln):
-        TAG = "send_image_car"
+        TAG = "send_image_car:"
         headers = {"Authorization": self.onechat_dev_token, "Content-Type": "application/json"}
         print(TAG, "send_image_car, one_id=", one_id)
         payload = {
@@ -253,7 +253,8 @@ class Hooking(Resource):
                 }
 	        ]
         }
-        r = requests.post(self.onechat_uri + "/message/api/v1/push_message", headers=headers, json=payload)
+        r = requests.post(self.onechat_uri + "/bot-message/api/v1/image-carousel", headers=headers, json=payload)
+
         return r
 
     def post(self):

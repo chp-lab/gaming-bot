@@ -27,7 +27,7 @@ class Hooking(Resource):
                         "payload": {"action": "image_rec"}
                     },
                     {
-                        "label": "ทำความรู้จักผู้คน",
+                        "label": "มีใครอยู่บ้าง",
                         "type": "text",
                         "message": "มีใครโสดอยู่บ้าง",
                         "payload": {"action": "find_single"}
@@ -313,7 +313,23 @@ class Hooking(Resource):
                 elif ("action" in data['message']['data']):
                     action = data['message']['data']['action']
                     if (action == "find_single"):
-                        self.send_msg(one_id, "พบกันเร็วๆ นี้ค่ะ")
+                        cmd = """SELECT users.name, users.interested_in FROM users WHERE users.one_email='%s'""" %(email)
+                        res = database.getData(cmd)
+                        interested_in = res[0]['result'][0]['interested_in']
+
+                        cmd ="""SELECT users.name, users.cover_image 
+                        FROM users WHERE users.gender="%s" AND users.one_email != '%s'
+                        ORDER BY RAND()
+                        LIMIT 1;""" %(interested_in, email)
+                        res = database.getData(cmd)
+                        print(TAG, "res=", res)
+
+                        results = res[0]['result']
+                        for peple in results:
+                            p_name = peple['name']
+                            p_cover_img = peple['interested_in']
+                            self.send_msg(one_id, p_name)
+                            self.send_msg(one_id, p_cover_img)
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")
@@ -338,6 +354,7 @@ class Hooking(Resource):
                     update = self.update_data(cmd)
                     print(TAG, "update cover_image=", update)
                     self.send_msg(one_id, res_msg)
+                    self.menu_send()
                     return module.success()
                 elif (msg_type == "text"):
                     cmd = """SELECT users.age FROM users WHERE users.one_email='%s'""" % (email)

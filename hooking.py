@@ -254,7 +254,6 @@ class Hooking(Resource):
 	        ]
         }
         r = requests.post(self.onechat_uri + "/bot-message/api/v1/image-carousel", headers=headers, json=payload)
-
         return r
 
     def post(self):
@@ -359,6 +358,7 @@ class Hooking(Resource):
                             p_cover_img = people['cover_image']
                             self.send_msg(one_id, p_name)
                             self.send_image_car(one_id, bot_id, p_cover_img)
+                        self.menu_send()
                         return module.success()
                     elif (action == "image_rec"):
                         self.send_msg(one_id, "ส่งรูปของคุณมาได้เลย")

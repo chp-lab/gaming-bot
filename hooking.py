@@ -235,6 +235,9 @@ class Hooking(Resource):
         if (user_exist):
             print(TAG, "### user exist!")
             if ('data' in data['message']):
+                tmp_data = data['message']['data']
+                print(TAG, "mesage contain data=", tmp_data)
+
                 if ("gen" in data['message']['data']):
                     gen = data['message']['data']["gen"]
                     print(TAG, "gen=", gen)
@@ -280,7 +283,7 @@ class Hooking(Resource):
                     print(TAG, "unnown message data in quick reply")
             elif('type' in data['message']):
                 msg_type = data['message']["type"]
-                print(TAG, "msg_type=", msg_type)
+                print(TAG, "data contain type, msg_type=", msg_type)
                 if (msg_type == "image"):
                     self.send_msg(one_id, "กำลังพัฒนาระบบบันทึกรูป")
                     return module.success()
@@ -313,7 +316,41 @@ class Hooking(Resource):
                             return module.success()
                         else:
                             self.send_msg(one_id, "อายุเท่าไหร่คะ ระบุเป็นตัวเลข")
-                            module.success()
+
+                        cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
+                        FROM users WHERE users.one_email='%s'""" % (email)
+
+                        res = database.getData(cmd)
+
+                        if (res[1] == 200):
+                            tmp_data = res[0]['result'][0]
+                            if (tmp_data['gender'] is None):
+                                req_body = self.gender_quest(user_id, bot_id)
+                                self.send_quick_reply(one_id, req_body)
+                                return module.success()
+                            elif (tmp_data['age'] is None):
+                                print(TAG, "ask age")
+                                self.send_msg(one_id, "อายุเท่าไหร่")
+                                return module.success()
+                            elif (tmp_data['interested_in'] is None):
+                                print(TAG, "ask interested_in")
+                                req_body = self.interested_quest(user_id, bot_id)
+                                self.send_quick_reply(one_id, req_body)
+                                return module.success()
+                            elif (tmp_data['data_valid'] is None):
+                                print(TAG, "profile not confirm")
+                                tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" % (
+                                tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
+                                self.send_msg(one_id, tmp_msg)
+                                req_body = self.data_valid_quest(user_id, bot_id)
+                                self.send_quick_reply(one_id, req_body)
+                                return module.success()
+                            else:
+                                print(TAG, "user data valid")
+                        else:
+                            print(TAG, "fail on check user data_valid")
+                            return module.serveErrMsg()
+                        module.success()
                     else:
                         print("age valid")
                         self.menu_send(user_id, bot_id)
@@ -322,38 +359,7 @@ class Hooking(Resource):
                     self.send_msg(one_id, "ยังไม่รองรับข้อความประเภท " + msg_type)
                     return module.success()
             else:
-                cmd = """SELECT users.name, users.gender, users.age, users.interested_in , users.data_valid 
-                FROM users WHERE users.one_email='%s'""" % (email)
-
-                res = database.getData(cmd)
-
-                if(res[1] == 200):
-                    tmp_data = res[0]['result'][0]
-                    if(tmp_data['gender'] is None):
-                        req_body = self.gender_quest(user_id, bot_id)
-                        self.send_quick_reply(one_id, req_body)
-                        return module.success()
-                    elif(tmp_data['age'] is None):
-                        print(TAG, "ask age")
-                        self.send_msg(one_id, "อายุเท่าไหร่")
-                        return module.success()
-                    elif(tmp_data['interested_in'] is None):
-                        print(TAG, "ask interested_in")
-                        req_body = self.interested_quest(user_id, bot_id)
-                        self.send_quick_reply(one_id, req_body)
-                        return module.success()
-                    elif(tmp_data['data_valid'] is None):
-                        print(TAG, "profile not confirm")
-                        tmp_msg = "ยินดีที่ได้รู้จักคุณ %s อายุ %s สนใจใน %s ยืนยันข้อมูลถูกต้อง" %(tmp_data['name'], tmp_data['age'], tmp_data['interested_in'])
-                        self.send_msg(one_id, tmp_msg)
-                        req_body = self.data_valid_quest(user_id, bot_id)
-                        self.send_quick_reply(one_id, req_body)
-                        return module.success()
-                    else:
-                        print(TAG, "user data valid")
-                else:
-                    print(TAG, "fail on check user data_valid")
-                    return module.serveErrMsg()
+                print(TAG, "this message is not support!")
         #first meet
         else:
             print(TAG, "usr not exist!")

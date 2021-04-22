@@ -243,7 +243,7 @@ class Hooking(Resource):
 	        "to": user_id,
 	        "elements": [
                 {
-                    "type": "image",
+                    "type": "link",
                     "image": img_ln,
                     "action": "",
                     "payload": "",

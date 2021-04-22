@@ -245,7 +245,7 @@ class Hooking(Resource):
                 {
                     "type": "link",
                     "image": img_ln,
-                    "action": "",
+                    "action": img_ln,
                     "payload": "",
                     "sign": "false",
                     "onechat_token": "false",
